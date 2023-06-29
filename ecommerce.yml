@@ -1,0 +1,6 @@
+token:
+  exiration_time: 86400000
+  secret: kr_richard_userService
+
+gateway:
+  ip: host.docker.internal
