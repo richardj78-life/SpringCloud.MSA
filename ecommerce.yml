@@ -1,5 +1,5 @@
 token:
-  exiration_time: 86400000
+  expiration_time: 86400000
   secret: kr_richard_userService
 
 gateway:
