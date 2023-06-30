@@ -1,6 +1,6 @@
 token:
-  expiration_time: 300000
-  secret: kr_richard_secret_code_mixmix
+  expiration_time: 600000
+  secret: secret_code_i_want_sex
 
 gateway:
   ip: 10.77.118.33
