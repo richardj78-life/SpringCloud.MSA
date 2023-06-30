@@ -3,4 +3,4 @@ token:
   secret: kr_richard_userService
 
 gateway:
-  ip: host.docker.internal
+  ip: 10.77.118.33
