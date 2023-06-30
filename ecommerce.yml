@@ -1,6 +1,6 @@
 token:
   expiration_time: 300000
-  secret: kr_richard_userService
+  secret: kr_richard_secret_code_mixmix
 
 gateway:
   ip: 10.77.118.33
