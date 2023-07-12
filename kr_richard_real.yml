@@ -17,7 +17,7 @@ spring:
 
 token:
   expiration_time: 1800000
-  secret: kr_richard_msa_secret_code_dev_alpha_rebbitmq
+  secret: kr_richard_msa_secret_code_real
 
 gateway:
   ip: 10.77.118.33
