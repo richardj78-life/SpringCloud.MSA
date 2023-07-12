@@ -16,8 +16,8 @@ spring:
       mode: never
 
 token:
-  expiration_time: 1800000
-  secret: kr_richard_msa_secret_code_dev
+  expiration_time: 3600000
+  secret: kr_richard_msa_secret_code_dev_rabbitmq
 
 gateway:
   ip: 10.77.118.33
