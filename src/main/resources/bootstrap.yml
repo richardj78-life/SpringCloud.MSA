@@ -1,0 +1,5 @@
+encrypt:
+  key-store:
+    location: file:///C:\Users\NHN\kr.richard.spring.cloud\keystore\apiEncryptionKey.jks
+    password: skrktnno1@#$
+    alias: apiEncryptionKey
