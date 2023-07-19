@@ -1,0 +1,52 @@
+server:
+  port: 0
+spring:
+  application:
+    name: user-service
+#====== DataBase/JPA =============
+  datasource:
+    url: jdbc:mysql://localhost:3306/kr_richard_eureka?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: skrktnno1@#$
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+
+#===== Eureka ====
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+
+#==== actuator ====
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health, beans, refresh, busrefresh
+
+#==== logging ====
+logging:
+  level:
+    kr.richard.userservice: debug
+
+#==== Filter ====
+greeting:
+  message: kr.richard.user-service
+
+#==== token ====
+token:
+  expiration_time: 18000000 #(30?)
+  secret: kr.richard.spring.cloud.msa.dev
