@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/kr_richard_dev?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: '{cipher}AQB18WgpZJjPvSxWdalTZQsTydnoQ82FgX4O0piFPFiD4KNewKFtE8nBZqx9EA/2dm8bwFsU8aclU3tSDcPw4Nc54+25LM8qlo0T5TUMbTdbbhDHHCztmo8nULdqyt3SF1ggmnsG9tlvd6DRSOIIGVv+4CHfmAyBGwAQV2ivA3lYnwUXqCvpVIhsZJIAMlNG6Ra/R3wtqEYGwDdWfBRRYjnwCSl6AzQjIHBOdfQFcJU/4FB0ee6PGaL1HLbo0iYG8ZvezkASzJ4Rh6KDKBUlsAc4pjWIu9qI1/Jk7Va4p9ZgKekvw6yNvbVXoVOVccQ9/eaOaGR9U3cJ/NoCQplgJpBI/OK0RxiL1ftBFWDA9zcmyQiVqO5mNCKMgwA866hYCjg='
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+
+token:
+  expiration_time: 3600000
+  secret: '{cipher}AQBT8w4VbqO2P10zYn7j4VcuhuF6r5BmZdVsn28N5gkOwCAUAx+xoAjpWz2jyhtO2ogS++AQoQl6WQVyVqha8UpYUT/pke2wH8U6Z8bHKqh0glb5DaJLWrlbNL5Tx8YH9OTIBFPauycfH3G/b25BDD6tOgfNncLkZsZIFLZMDh7yM20ZFg6ajB9kqMEkCL1VN/Yyx+rhovVrnfFisN3B+H3vSmdN4OtHK7r4iCci1bwQMQTqi9xAYHLqrr5At+LDG9GaCeLouqgwEi6DhQe++oS1cRi1cY0hs1H2wGrs/b2ldvHukCiSyt95Ex6jr+bn/nKs/Aarw/EYI2cqBxbFYF3ew0/gX2ynw3u30pc8IbKzoyx88Qq1zT/xK2RD3hYmT8l4PJTgcncr/dtdupOo3rxEmu/AXLPu4ip8CVXM/T7u/g=='
+
+gateway:
+  ip: 10.77.118.33
