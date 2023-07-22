@@ -21,7 +21,7 @@ public class ItemEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String itemId;
 
     @Column(nullable = false)
