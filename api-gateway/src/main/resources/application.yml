@@ -3,18 +3,18 @@ server:
 spring:
   application:
     name: api-gateway
-  #  rabbitmq:
-  #    host: 127.0.0.1
-  #    port: 5672
-  #    username: guest
-  #    password: guest
-  #  config:
-  #    import: optional:configserver:http://localhost:8888
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+  config:
+    import: optional:configserver:http://localhost:8888
   cloud:
-    #    config:
-    #      name: kr_richard
-    #      profile: dev
-    #      label: master
+    config:
+      name: kr_richard
+      profile: alpha
+      label: master
     gateway:
       default-filters:
         - name: GlobalFilter
@@ -117,8 +117,8 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka
 
 #==== token ====
-token:
-  secret: kr.richard.spring.cloud.msa.dev
+#token:
+#  secret: kr.richard.spring.cloud.msa.dev
 
 #==== actuator ====
 management:

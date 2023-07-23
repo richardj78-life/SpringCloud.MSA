@@ -3,22 +3,34 @@ server:
 spring:
   application:
     name: item-service
-  #====== DataBase/JPA =============
-  datasource:
-    url: jdbc:mysql://localhost:3306/kr_richard_eureka?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: skrktnno1@#$
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-  sql:
-    init:
-      mode: never
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+  config:
+    import: optional:configserver:http://127.0.0.1:8888
+  cloud:
+    config:
+      name: kr_richard
+      profile: alpha
+      label: master
+#====== DataBase/JPA =============
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/kr_richard_eureka?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: skrktnno1@#$
+#  jpa:
+#    show-sql: true
+#    hibernate:
+#      ddl-auto: update
+#    properties:
+#      hibernate:
+#        format_sql: true
+#  sql:
+#    init:
+#      mode: never
 
 #===== Eureka ====
 eureka:
@@ -31,19 +43,22 @@ eureka:
       defaultZone: http://127.0.0.1:8761/eureka
 
 #==== actuator ====
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health, beans, refresh, busrefresh
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, beans, refresh, busrefresh
 
 #==== logging ====
 logging:
   level:
-    kr.richard.userservice: debug
+    kr.richard.itemservice: debug
+
+#==== Filter ====
+#greeting:
+#  message: kr.richard.user-service
 
 #==== token ====
-token:
-  expiration_time: 18000000 #(30?)
-  secret: kr.richard.spring.cloud.msa.dev
-
+#token:
+#  expiration_time: 18000000 #(30?)
+#  secret: kr.richard.spring.cloud.msa.dev
