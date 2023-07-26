@@ -2,6 +2,8 @@ package kr.richard.orderservice.controller;
 
 import kr.richard.orderservice.dto.OrderDto;
 import kr.richard.orderservice.jpa.OrderEntity;
+import kr.richard.orderservice.messageque.KafkaProducer;
+import kr.richard.orderservice.messageque.OrderProducer;
 import kr.richard.orderservice.service.OrderService;
 import kr.richard.orderservice.vo.RequestOrder;
 import kr.richard.orderservice.vo.ResponseOrder;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -29,6 +32,8 @@ import java.util.List;
 public class OrderController {
     private final Environment environment;
     private final OrderService orderService;
+    private final KafkaProducer kafkaProducer;
+    private final OrderProducer orderProducer;
 
     @GetMapping("/health_check")
     public String status(){
@@ -44,10 +49,24 @@ public class OrderController {
 
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+
         OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
         orderDto.setUserId(userId);
-        OrderDto createdOrder = orderService.createOrder(orderDto);
-        ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
+
+        /*jpa - create order*/
+        /*OrderDto createdOrder = orderService.createOrder(orderDto);
+        ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);*/
+
+        /*kafka - */
+        orderDto.setOrderId(UUID.randomUUID().toString()); //주문 id 생성
+        orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice()); //주문가격 = 수량*가격
+
+
+        /*kafka - send order*/
+        kafkaProducer.send("item-qty", orderDto);
+        orderProducer.send("create_order", orderDto);
+
+        ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
 
@@ -62,4 +81,6 @@ public class OrderController {
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
+
+
 }
