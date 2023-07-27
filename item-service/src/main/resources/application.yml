@@ -53,7 +53,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, beans, refresh, busrefresh
+        include: health, beans, refresh, busrefresh, info, metrics, prometheus
 
 #==== logging ====
 logging:
@@ -61,8 +61,8 @@ logging:
     kr.richard.itemservice: debug
 
 #==== Filter ====
-#greeting:
-#  message: kr.richard.user-service
+greeting:
+  message: kr.richard.item-service
 
 #==== token ====
 #token:

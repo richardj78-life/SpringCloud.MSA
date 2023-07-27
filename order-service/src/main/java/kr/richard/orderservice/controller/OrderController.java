@@ -1,10 +1,12 @@
 package kr.richard.orderservice.controller;
 
+import io.micrometer.core.annotation.Timed;
 import kr.richard.orderservice.dto.OrderDto;
 import kr.richard.orderservice.jpa.OrderEntity;
 import kr.richard.orderservice.messageque.KafkaProducer;
 import kr.richard.orderservice.messageque.OrderProducer;
 import kr.richard.orderservice.service.OrderService;
+import kr.richard.orderservice.vo.Greeting;
 import kr.richard.orderservice.vo.RequestOrder;
 import kr.richard.orderservice.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +36,10 @@ public class OrderController {
     private final OrderService orderService;
     private final KafkaProducer kafkaProducer;
     private final OrderProducer orderProducer;
+    private final Greeting greeting;
 
     @GetMapping("/health_check")
+    @Timed(value = "order.status", longTask = true)
     public String status(){
         return String.format("It's Working in Order Service"
                 + " / port(local.server.port)="+ environment.getProperty("local.server.port")
@@ -44,7 +48,14 @@ public class OrderController {
                 + " / token expiration time="+ environment.getProperty("token.expiration_time"));
     }
 
+    @GetMapping("/welcome")
+    @Timed(value = "order.status", longTask = true)
+    public String welcome(){
+        return greeting.getMessage();
+    }
+
     @PostMapping("{userId}/orders")
+    @Timed(value = "order.status", longTask = true)
     public ResponseEntity<ResponseOrder> createOrder(@PathVariable("userId")String userId, @RequestBody RequestOrder orderDetails, ModelMapper mapper){
 
         log.info(">>>> ZIPKIN Before add post orders data");
@@ -55,25 +66,27 @@ public class OrderController {
         orderDto.setUserId(userId);
 
         /*jpa - create order*/
-        OrderDto createdOrder = orderService.createOrder(orderDto);
-        ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);
+        /*OrderDto createdOrder = orderService.createOrder(orderDto);
+        ResponseOrder responseOrder = mapper.map(createdOrder, ResponseOrder.class);*/
 
         /*kafka - */
-        /*orderDto.setOrderId(UUID.randomUUID().toString()); //주문 id 생성
-        orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice()); //주문가격 = 수량*가격*/
-
+        orderDto.setOrderId(UUID.randomUUID().toString()); //주문 id 생성
+        orderDto.setTotalPrice(orderDetails.getQty() * orderDetails.getUnitPrice()); //주문가격 = 수량*가격
 
         /*kafka - send order*/
-        /*kafkaProducer.send("item-qty", orderDto);
-        orderProducer.send("create_order", orderDto);
+        kafkaProducer.send("item-qty", orderDto);
+        log.info("<<<< ZIPKIN Kafka producer item-qty");
 
-        ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);*/
-        log.info("<<<< ZIPKIN After add post orders data");
+        orderProducer.send("create_order", orderDto);
+        log.info("<<<< ZIPKIN Kafka producer create_order");
+
+        ResponseOrder responseOrder = mapper.map(orderDto, ResponseOrder.class);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
 
     }
 
     @GetMapping("{userId}/orders")
+    @Timed(value = "order.status", longTask = true)
     public ResponseEntity<List<ResponseOrder>> getOrders(@PathVariable("userId")String userId){
 
         log.info(">>>> ZIPKIN Before retrieved get orders data");

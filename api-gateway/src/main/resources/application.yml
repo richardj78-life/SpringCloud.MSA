@@ -131,5 +131,5 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, beans, refresh, busrefresh
+        include: health, beans, refresh, busrefresh, info, metrics, prometheus
 

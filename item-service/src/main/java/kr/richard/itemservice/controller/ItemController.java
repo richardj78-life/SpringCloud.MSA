@@ -1,7 +1,9 @@
 package kr.richard.itemservice.controller;
 
+import io.micrometer.core.annotation.Timed;
 import kr.richard.itemservice.jpa.ItemEntity;
 import kr.richard.itemservice.service.ItemService;
+import kr.richard.itemservice.vo.Greeting;
 import kr.richard.itemservice.vo.ResponseItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +26,10 @@ public class ItemController {
 
     private final Environment environment;
     private final ItemService itemService;
+    private final Greeting greeting;
 
     @GetMapping("/health_check")
+    @Timed(value = "item.status", longTask = true)
     public String status(){
         return String.format("It's Working in Item Service"
                 + " / port(local.server.port)="+ environment.getProperty("local.server.port")
@@ -34,7 +38,15 @@ public class ItemController {
                 + " / token expiration time="+ environment.getProperty("token.expiration_time"));
     }
 
+    @GetMapping("/welcome")
+    @Timed(value = "item.status", longTask = true)
+    public String welcome(){
+        return greeting.getMessage();
+    }
+
+
     @GetMapping("/item")
+    @Timed(value = "item.status", longTask = true)
     public ResponseEntity<List<ResponseItem>> getCatalogs(){
         Iterable<ItemEntity> itemList = itemService.getAllItems();
 

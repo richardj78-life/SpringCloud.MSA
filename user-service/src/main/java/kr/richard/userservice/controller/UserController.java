@@ -1,5 +1,6 @@
 package kr.richard.userservice.controller;
 
+import io.micrometer.core.annotation.Timed;
 import kr.richard.userservice.dto.UserDto;
 import kr.richard.userservice.jpa.UserEntity;
 import kr.richard.userservice.service.UserService;
@@ -35,6 +36,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/health_check")
+    @Timed(value = "users.status", longTask = true)
     public String status(){
         return String.format("It's Working in User Service"
                 + " / port(local.server.port)="+ environment.getProperty("local.server.port")
@@ -44,11 +46,13 @@ public class UserController {
     }
 
     @GetMapping("/welcome")
+    @Timed(value = "users.status", longTask = true)
     public String welcome(){
         return greeting.getMessage();
     }
 
     @PostMapping("/users")
+    @Timed(value = "users.status", longTask = true)
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser requestUser, ModelMapper mapper){
 
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -61,6 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
+    @Timed(value = "users.status", longTask = true)
     public ResponseEntity<List<ResponseUser>> getUsers(){
         Iterable<UserEntity> userList = userService.getUserByAll();
 
@@ -71,6 +76,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/users/{userId}",produces = {MediaType.APPLICATION_JSON_VALUE})
+    @Timed(value = "users.status", longTask = true)
     public ResponseEntity<ResponseUser> getUser(@PathVariable("userId") String userId){
         UserDto userDto = userService.getUserByUserId(userId);
         ResponseUser resultUser = new ModelMapper().map(userDto, ResponseUser.class);
