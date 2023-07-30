@@ -10,7 +10,7 @@
     </parent>
     <groupId>kr.richard</groupId>
     <artifactId>item-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>item-service</name>
     <description>item-service</description>
     <properties>

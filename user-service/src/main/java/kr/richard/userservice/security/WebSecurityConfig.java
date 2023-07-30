@@ -30,8 +30,8 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers("/actuator/**").permitAll();
         http.authorizeRequests().antMatchers("/health_check").permitAll();
         http.authorizeRequests().antMatchers("/**")
-                .hasIpAddress("10.77.118.33")
-                /*.hasIpAddress("192.168.219.105")*/
+                /*.hasIpAddress("10.77.118.33")*/
+                .hasIpAddress("192.168.219.105")
                 .and()
                 .addFilter(getAuthenticationFilter());
         http.headers().frameOptions().disable();

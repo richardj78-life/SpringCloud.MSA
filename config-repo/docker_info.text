@@ -1,0 +1,153 @@
+#docker 명령어
+
+#docker image
+  imageList : docker image ls -a
+  imageDel : docker rmi imageID
+
+#docker container
+
+containerRun
+- docker run -d -p HostPort:DockerPort -e option --name container_name imagename:tag
+- docker run -d -p 13306:3306 -e MYSQL_ROOT_PASSWORD=skrktnno1@#$ --name mysql myql:8.0.33
+  option
+    -d : deteached mode (백그라운드 실행 모드)
+    -p : 호스트와 컨테이너의 포트 포워드
+    -v : 호스트 디렉터리와 컨테이너 디렉터리 연결(마운트)
+    -e : 컨테이너 내에서 사용할 환경변수 설정값
+    --name : 컨테이너 이름
+    -rm : 컨테이너 종료시 자동제거
+    -it : 터미널 입력 옵션
+    -link : 컨테이너 연결[컨테이너명:별칭]
+
+containerList : docker container ls -a
+containerDel : docker rm containerID
+
+#docker build
+  - docker build --tag 도커계정/도커레포지토리:태그명 .
+  - docker buid --tag richardjeong/kr_richard_msa:discovery_server_0.1 .
+
+#docker push
+  - docker push 도커계정/도커레포지토리:태그명
+  - docker push richardjeong/kr_richard_msa:discovery_server_0.1
+
+#docker resource 정리
+  - docker system prune
+
+#docker network
+  - docker network create --driver bridge[브릿지 이름]
+  - docker network create --gateway 172.18.0.1 --subnet 172.18.0.0/16 richard_net 
+  - docker network ls : 도커네트워크 
+  - docker network inspect richard_net : 네트워크 상세정보
+
+
+docker container
+*host정보에 IP주소 말고 도커 이미지 네임을 적용
+
+#1.mysql
+  *create Dockerfile
+    FROM mysql:8.0.33
+    ENV MYSQL_ROOT_PASSWORD skrktnno1@#$
+    ENV MYSQL_DATABASE kr_richard_eureka
+    COPY ./mysql_data/mysql /var/lib/mysql
+    EXPOSE 3306
+    ENTRYPOINT ["mysqld","--user=root"]
+
+*build
+docker build -t richardjeong/kr_richard_msa:mysql_8.0.33 .
+
+*run
+docker run -d -p 13306:3306 --network richard_net --name mysql -v ./mysql_data/mysql:/var/lib/mysql richardjeong/kr_richard_msa:mysql_8.0.33
+docker run -d -p 13306:3306 -e MYSQL_ROOT_PASSWORD=skrktnno1@#$ --name mysql mysql:8.0.33
+
+#2.rabbitmq
+docker run -d --name rabbitmq --network richard_net \
+-p 15672:15672 -p 5672:5672 \
+-p 15671:15671 -p 5671:5671 \
+-p 4369:4369 \
+-e RABBITMQ_DEFAULT_USER=guest \
+-e RABBITMQ_DEFAULT_PASS=guest \
+rabbitmq:management
+
+#3.zipkin
+docker run -d --name zipkin --network richard_net -p 9411:9411 openzipkin/zipkin
+
+#4.config-server 
+docker run -d --name config-server --network richard_net -p 8888:8888 \
+-e "spring.rabbitmq.host=rabbitmq" \
+richardjeong/kr_richard_msa:config_server_0.1
+
+#5.discovery-discovery
+  docker run -d --name discovery-server --network richard_net -p 8761:8761 richardjeong/kr_richard_msa:discovery-server-0.1
+
+#6.api-gateway
+docker run -d --name api-gateway --network richard_net -p 8000:8000 \
+-e "spring.zipkin.base-url=http://zipkin:9411" \
+-e "spring.rabbitmq.host=rabbitmq" \
+-e "spring.config.import=optional:configserver:http://config-server:8888"  \
+-e "eureka.client.service-url.defaultZone=http://discovery-server:8761/eureka/" \
+richardjeong/kr_richard_msa:api-gateway_0.1
+
+#7.zookeeper&kafka
+docker-compose -f docker-compose-single-broker.yml up -d
+
+#8.prometheus
+docker run -d -p 9090:9090 --network richard_net --name prometheus \
+-v ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml \
+prom/prometheus:latest
+
+#9.grafana
+docker run -d -p 3000:3000 --network richard_net --name grafana grafana/grafana:latest
+
+#1o.user-service
+docker run -d --name user-service --network richard_net \
+-e "spring.zipkin.base-url=http://zipkin:9411" \
+-e "spring.rabbitmq.host=rabbitmq" \
+-e "spring.config.import=optional:configserver:http://config-server:8888"  \
+-e "eureka.client.service-url.defaultZone=http://discovery-server:8761/eureka/" \
+-e "logging.file=/api-logs/users-ws.log" \
+richardjeong/kr_richard_msa:user-service-0.1
+
+
+
+
+
+
+lsof -i :portnum 명령어로 사용중인 해당 Port의 PID를 확인할 수 있다.
+kil -9 portnum 명령어로 해당 PID의 Process를 종료할 수 있다.
+
+
+
+
+#docker-compose-single-broker.yml
+version: '3'
+networks:
+  richard_net:
+    external: true                   # Mark the network as external
+    name: richard_net                # Set the network name to match the existing network
+
+services:
+  zookeeper:
+    image: zookeeper:3.8.2
+    ports:
+      - "2181:2181"
+    networks:
+      richard_net:    # Use the existing external network
+        ipv4_address: 172.18.0.100
+
+  kafka:
+    #build: .
+    image: bitnami/kafka:3.5.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 172.18.0.101
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: "yes"   # Set the environment variable to allow plaintext listener
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      richard_net:    # Use the existing external network
+        ipv4_address: 172.18.0.101

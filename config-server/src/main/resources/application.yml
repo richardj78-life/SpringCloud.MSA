@@ -20,6 +20,7 @@ spring:
             -----END EC PRIVATE KEY-----
           default-label: master
   rabbitmq:
+#    host: rabbitmq
     host: 127.0.0.1
     port: 5672
     username: guest
