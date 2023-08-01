@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/kr_richard_dev?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://mysql:3306/kr_richard_dev?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: '{cipher}AQCf6BeEsl+cYZ3gFqm/vwFC0HQNKbYFquZqIFkOoNM/C2HTnhRwQ6Y+SsJT0TlKCbpj+dcqWVaPlNPxPjVTKB6nmy1QqbyFPa06qquPbycheOP3Uuqio+V8zgSlbQYfI+yupSRa6RbnaXzEfvAO22dwOpSoYnXG2h4xBsfhnZBwmFoTbKi4YQ6b1gnpYb8jrbSSBIdR9FPkuynjQvhCft0SUhVY/BGI6NuGu2CLTizleMRkJVc4VdG1vLqsVF5wrRhsmR6NAhFHn6y+pqVSCBbaMXeBx49O0jqmTHogaD1wQlst1uKQf6qlkwvVVe6yCBT+HMx4Y0NUgAm++Q4vAt0RWYqaJ5YoMgsQd5nG8M+gfl2U/btXcN4po8a1lOPiYpk='
@@ -20,4 +20,4 @@ token:
   secret: '{cipher}AQA1/1644Bimns7vvziFPxN1B75RAFuaXOIhdkEI9Wl3MHxpID+ea5HgHSDmfGOuskFP3zWSgeg7QMuIp5WJnyQldwzK/d1zh1ryzCSI4psV3WCj04a4OUcR2aN6/bHI9bR/Yj+bpasL3NVj4S278eXsGXKF42raAr4f6SSbN16qOkZ/QmQUzg58GeIDpyRxFWGmvCKWy9IMY9/QtOroGqQdSATmcuWb6LojqG5jKzj7Fa6tAZ534ava0R2Y7XDTTO0L1XFWvZ60qQinYQGQqO20PvFUW0XO9zs0wEtdo/g38mNaip4hQAEqhLc67ftJdeawVEqTIxR6AMNz4gfgYTRU+eFiDC+UNet8b7MRrHTPj+gQTlOF4qMkSSacJfX/aXdO9Qiu7x4b/NBjPS0WrxansuiQQbpFEGY9t7ztGR4+cA=='
 
 gateway:
-  ip: 10.77.118.33
+  ip: 172.18.0.4
