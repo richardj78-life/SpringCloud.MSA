@@ -2,6 +2,7 @@ encrypt:
   key-store:
 #    location: file:///C:\Users\NHN\ProjectMSA\keystore\apiEncryptionKey.jks
 #    location: file://${user.home}/kr.richard.msa/keystore/apiEncryptionKey.jks
-    location: file:/apiEncryptionKey.jks
+    location: file:///C:\Users\NHN\ProjectMSA\config-server\apiEncryptionKey.jks
+#    location: file:/apiEncryptionKey.jks
     password: skrktnno1@#$
     alias: apiEncryptionKey

@@ -44,6 +44,10 @@ docker container
 *host정보에 IP주소 말고 도커 이미지 네임을 적용
 
 #1.mysql
+docker pull mysql:8.0.33
+docker run -d -p 13306:3306 -e MYSQL_ROOT_PASSWORD=skrktnno1@#$ --name mysql mysql:8.0.33
+
+Mac OS
   *create Dockerfile
     FROM mysql:8.0.33
     ENV MYSQL_ROOT_PASSWORD skrktnno1@#$
@@ -52,14 +56,40 @@ docker container
     EXPOSE 3306
     ENTRYPOINT ["mysqld","--user=root"]
 
-*build
-docker build -t richardjeong/kr_richard_msa:mysql_8.0.33 .
+  *build
+  docker build -t richardjeong/kr_richard_msa:mysql_8.0.33 .
 
-*run
-docker run -d -p 13306:3306 --network richard_net --name mysql -v ./mysql_data/mysql:/var/lib/mysql richardjeong/kr_richard_msa:mysql_8.0.33
-docker run -d -p 13306:3306 -e MYSQL_ROOT_PASSWORD=skrktnno1@#$ --name mysql mysql:8.0.33
+  *run
+  docker run -d -p 13306:3306 --network richard_net --name mysql -v ./mysql_data/mysql:/var/lib/mysql richardjeong/kr_richard_msa:mysql_8.0.33
+
+Windows OS
+  *create Dockerfile
+    FROM mysql:8.0.31
+    ENV MYSQL_ROOT_PASSWORD skrktnno1@#$
+    ENV MYSQL_DATABASE kr_richard_eureka
+    COPY ./mysql_data/mysql /var/lib/mysql
+    EXPOSE 3306
+    CMD ["mysqld", "--user=root", "--lower_case_table_names=1","--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci" ]
+
+  +add my.cnf
+  [mysql]
+  default-character-set=utf8mb4
+  [client]
+  default-character-set=utf8mb4
+  [mysqldump]
+  default-character-set=utf8mb4
+
+  *build
+    docker build -t richardj78/kr_richard_msa:mysql_8.0.31 .
+
+  *run
+  docker run -d -p 13306:3306 --network richard_msa --name mysql \
+  -v c:/Users/NHN/DockerFile/mysql/mysql_data/mysql:/var/lib/mysql \
+  richardj78/kr_richard_msa:mysql_8.0.31
 
 #2.rabbitmq
+docker pull rabbitmq:3.12.2-management
+docker build -t richardj78/kr_richard_msa:rabbitmq_3.12.2 .
 docker run -d --name rabbitmq --network richard_net \
 -p 15672:15672 -p 5672:5672 \
 -p 15671:15671 -p 5671:5671 \
@@ -68,7 +98,10 @@ docker run -d --name rabbitmq --network richard_net \
 -e RABBITMQ_DEFAULT_PASS=guest \
 rabbitmq:management
 
+docker run -d --name rabbitmq --network richard_msa -p 15672:15672 -p 5672:5672 -p 15671:15671 -p 5671:5671 -p 4369:4369 richardj78/kr_richard_msa:rabbitmq_3.12.2
+
 #3.zipkin
+docker pull openzipkin/zipkin:latest
 docker run -d --name zipkin --network richard_net -p 9411:9411 openzipkin/zipkin
 
 #4.config-server 

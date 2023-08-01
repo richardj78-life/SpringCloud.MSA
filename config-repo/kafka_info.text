@@ -1,74 +1,173 @@
 kafka
-=========================================================================================
-# Version 확인
-bin/kafka-topics.sh --version
 
-# Zookeeper 실행
-bin/zookeeper-server-start.sh config/zookeeper.properties
+#kafka설치
+https://kafka.apache.org/downloads
+설치 버전
+    - scala 2.13
+    - kafka 3.5.0
 
-# Kafka 실행
-bin/kafka-server-start.sh config/server.properties
+#====== kafka 명령어 ======
+#1.kafka Home
+    cd kafka_2.13-3.5.0
 
-# Topic 생성
-bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+#2.zookeeper server start
+    Mac bin/zookeeper-server-start.sh config/zookeeper.properties
+    Windows ./bin/windows/zookeeper-server-start.bat ./config/zookeeper.properties
 
-# Topic 확인
-bin/kafka-topics.sh --describe --topic quickstart-events --bootstrap-server localhost:9092
+#3.kafka server start
+    Mac bin/kafka-server-start.sh config/server.properties
+    Windows ./bin/windows/kafka-server-start.bat ./config/server.properties
 
-# Topic 목록
-bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+#4.Create Topic
+    Mac bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+    Windows ./bin/windows/kafka-topics.bat --create --topic quickstart-events --bootstrap-server localhost:9092
 
-# Topic 삭제
-bin/kafka-topics.sh --delete --bootstrap-server localhost:9092 --topic quickstart-events
+#5.Topic describe
+    Mac bin/kafka-topics.sh --discribe --topic quickstart-events --bootstrap-server localhost:9092
+    Windows ./bin/windows/kafka-topics.bat --describe --topic quickstart-events --bootstrap-server localhost:9092
 
-# Producer
-bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+#6.Topic List
+    Mac bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+    Windows ./bin/windows/kafka-topics.bat --list --bootstrap-server localhost:9092
 
-# Producer - Key, Value
-./bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic quickstart-events --property "parse.key=true" --property "key.separator=:" --property "print.key=ture"
+#7.producer start
+    Mac bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+    Windows ./bin/windows/kafka-console-producer.bat --topic quickstart-events --bootstrap-server localhost:9092
 
-# Producer - Message
-ABCDE
+#8.consumer start
+    Mac bin/kafka-console-consumer.sh --topic quickstart-events --bootstrap-server localhost:9092
+    Windows ./bin/windows/kafka-console-consumer.bat --topic quickstart-events --bootstrap-server localhost:9092
 
-# Producer - Key, Value Message
-key:{"val1":"A","val2":"B","val3":3}
+#====== kafka connect QuickStart ======
+#1.kafka connect 설치
+    download: https://packages.confluent.io/archive/7.4/confluent-community-7.4.1.tar.gz
 
-# Consumer
-bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+    Windows \confluent-7.4.1\bin\windows\kafka-run-class.bat 수정
 
-# Consumer Group 확인
-bin/kafka-consumer-groups.sh --list --bootstrap-server localhost:9092
+        rem Classpath addition for LSB style path
+        if exist %BASE_DIR%\share\java\kafka\* (
+	        call:concat %BASE_DIR%\share\java\kafka\*
+        )
 
-# Consumer Group Topic 확인
-bin/kafka-consumer-groups.sh --describe --bootstrap-server localhost:9092 --group quickstart-events-group
+        rem Classpath addition for core
+        for %%i in ("%BASE_DIR%\core\build\libs\kafka_%SCALA_BINARY_VERSION%*.jar") do (
+	        call :concat "%%i"
+        )
+    Windows \confluent-7.4.1\bin\windows\connect-distributed.bat 수정(log4j 경로 수정)
+        rem Log4j settings
+        IF ["%KAFKA_LOG4J_OPTS%"] EQU [""] (
+	        set KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:%BASE_DIR%/etc/kafka/connect-log4j.properties
+        )
 
-=========================================================================================
-kafka connect
+#2.kafka connect start
+    Mac bin/windows/connect-distributed.sh etc/kafka/connect-distributed.properties
+    Windows ./bin/windows/connect-distributed.bat ./etc/kafka/connect-distributed.properties
 
-#kafka connect 설치
-https://packages.confluent.io/archive/7.4/confluent-community-7.4.1.tar.gz
+#3.JDBC Connector 설치
+    download: https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc
+    doc: https://docs.confluent.io/kafka-connectors/jdbc/current/index.html
 
-#jdb cconnector 설치
-https://www.confluent.io/hub/confluentinc/kafka-connect-jdbc
+#4.kafka connect-distributed.properties package.path 수정
+    #plugin.path=/usr/share/java
+    Mac plugin.path= /Users/richardj78/kafka/confluentinc-kafka-connect-jdbc-10.7.3/lib
+    Windows plugin.path=C:\\Users\\NHN\\kafka\\confluentinc-kafka-connect-jdbc-10.7.3\\lib
 
-#connect 실행
-bin/connect-distributed etc/kafka/connect-distributed.properties
+#5.mysql connector 설치
+    Path >> C:\Users\NHN\kafka\confluent-7.4.1\share\java\kafka\
+    mysql-connector-j-8.0.33.jar
 
-#db연결
-127.0.0.1:8083/connectors
+#6.connect > source connector
+cUrl -X POST -d @- http://localhost:8083/connectors --header "content-Type:application/json"
+POSTMAN
+    POST http://localhost:8083/connectors
+    Body > raw > JSON
+cubrid
 {
-    "name":"my-source-connect",
-    "config":{
-        "connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector",
-        "connection.url":"jdbc:mysql://localhost:3306/kr_richard_kafka",
+    "name": "order-sink-connect_1",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:cubrid:localhost:30000:kr_richard_cubrid:::",
+        "connection.user":"dba",
+        "connection.password":"skrktnno1@#$",
+        "dialect.name":"CubridDatabaseDialect",
+        "mode":"incrementing",
+        "auto.create":"true",
+        "auto.evolve":"true",
+        "delete.enabled":"false",
+        "table.whitelist" : "kr_richard_cubrid.create_order",
+        "tasks.max":"1",
+        "topics":"create_order"
+    }
+}
+
+mysql
+{
+    "name": "order-sink-connect_2",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:mysql://localhost:3306/kr_richard_eureka",
         "connection.user":"root",
         "connection.password":"skrktnno1@#$",
         "mode":"incrementing",
-        "incrementing.column.name":"id",
-        "table.whitelist":"kr_richard_kafka.users",
-        "topic.prefix":"my_topic_",
-        "tasks.max":"1"
+        "auto.create":"true",
+        "auto.evolve":"true",
+        "delete.enabled":"false",
+        "table.whitelist" : "kr_richard_eureka.create_order",
+        "tasks.max":"1",
+        "topics":"create_order"
     }
 }
-상태확인
-127.0.0.1:8083/connectors/my-source-connect/status
+    #source connector 이름(JdbcSourceConnector를 사용)
+    #커넥터 종류(JdbcSourceConnector 사용)
+    #jdbc이므로 DB의 정보 입력
+    #DB 유저 정보
+    #DB 패스워드
+    #"테이블에 데이터가 추가됐을 때 데이터를 polling 하는 방식"(bulk, incrementing, timestamp, timestamp+incrementing)
+    #incrementing mode일 때 자동 증가 column 이름
+    #데이터를 변경을 감지할 table 이름
+    #kafka 토픽에 저장될 이름 형식 지정 위 같은경우 whitelist를 뒤에 붙여 example_topic_users에 데이터가 들어감
+    #커넥터에 대한 작업자 수
+
+GET http://localhost:9092/connectors/my-source-cinnect/status
+
+#7.connect > sink connector
+cUrl -X POST -d @- http://localhost:8083/connectors --header "content-Type:application/json"
+
+{
+    "name": "my-sink-connect",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:mysql://localhost:3306/kr_richard_kafka_sink",
+        "connection.user":"root",
+        "connection.password":"skrktnno1@#$",
+        "auto.create":"true",
+        "auto.evolve":"true",
+        "delete.enabled":"false",
+        "tasks.max":"1",
+        "topics":"example_topic_users"
+    }
+}
+    #데이터를 넣을 테이블이 누락되었을 경우 자동 테이블 생성 여부
+    #특정 데이터의 열이 누락된 경우 대상 테이블에 ALTER 구문을 날려 자동으로 테이블 구조를 바꾸는지 여부 (하지만 데이터 타입 변경, 컬럼 제거, 키본 키 제약 조건 추가등은 시도되지 않는다)
+    #삭제 모드 여부
+
+
+#8.kafka connect 명령어
+    GET /	: 실행 중인 커넥트 정보 확인
+    GET /connectors : 실행중인 커넥트 이름 확인
+    POST    /connectors	: 새로운 커넥터 생성 요청
+    GET	/connectors/{커넥트 이름}	: 실행 중인 커넥터 정보 확인
+    GET	/connectors/{커넥트 이름}/config	: 실행 중인 커넥터의 설정값 확인
+    PUT	/connectors/{커넥터 이름}/config	: 실행 중인 커넥터 설정값 변경 요청
+    GET	/connectors/{커넥터 이름}/status	: 실행 중인 커넥터 상태 확인
+    POST	/connectors/{커넥터 이름}/restart	: 실행 중인 커넥터 재시작 요청
+    PUT	/connectors/{커넥터 이름}/pause	: 커넥터 일시 중지 요청
+    PUT	/connectors/{커넥터 이름}/resume	: 일시 중지된 커넥트 재실행 요청
+    DELETE	/connectors/{커넥터 이름}	: 실행 중인 커넥터 종료
+    GET	/connectors/{커넥터 이름}/tasks	: 실행 중인 커넥터의 테스크 정보 확인
+    GET	/connectors/{커넥터 이름}/tasks/{테스크 아이디}/status	: 실행 중인 커넥트의 테스크 상태 확인
+    POST	/connectors/{커넥터 이름}/tasks/{테스크 아이디}/restart	: 실행 중인 커넥트의 테스크 재시작 요청
+    GET	/connectors/{커넥터 이름}/topics	: 커넥터별 연됭된 토픽 정보 확인
+    GET	/connectors-plugins	: 커넥트에 존재하는 커넥터 플러그인 확인
+    PUT	/connectors-plugins/{커넥터 플러그인 이름}/config/validate	: 커넥터 생성 시 설정값 유효 여부 확인
+

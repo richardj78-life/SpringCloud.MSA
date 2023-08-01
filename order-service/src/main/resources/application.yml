@@ -3,12 +3,6 @@ server:
 spring:
   application:
     name: order-service
-  zipkin:
-    base-url: http://localhost:9411
-    enabled: true
-  sleuth:
-    sampler:
-      probability: 1.0
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -19,14 +13,9 @@ spring:
   cloud:
     config:
       name: kr_richard
-      profile: alpha
+      profile: local-alpha
       label: master
 #====== DataBase/JPA =============
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/kr_richard_eureka?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    username: root
-#    password: skrktnno1@#$
 #  jpa:
 #    show-sql: true
 #    hibernate:
@@ -39,6 +28,13 @@ spring:
 #      mode: never
 
 #===== Eureka ====
+#  zipkin:
+#    base-url: http://localhost:9411
+#    enabled: true
+#  sleuth:
+#    sampler:
+#      probability: 1.0
+
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

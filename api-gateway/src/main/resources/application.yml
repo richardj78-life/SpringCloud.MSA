@@ -3,13 +3,6 @@ server:
 spring:
   application:
     name: api-gateway
-  zipkin:
-    base-url: http://127.0.0.1:9411
-#    base-url: http://zipkin:9411
-    enabled: true
-  sleuth:
-    sampler:
-      probability: 1.0
   rabbitmq:
 #    host: rabbitmq
     host: 127.0.0.1
@@ -22,7 +15,7 @@ spring:
   cloud:
     config:
       name: kr_richard
-      profile: alpha
+      profile: local-alpha
       label: master
     gateway:
       default-filters:
@@ -116,6 +109,13 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/order-service/(?<segment>.*), /$\{segment}
+  zipkin:
+    base-url: http://127.0.0.1:9411
+      #    base-url: http://zipkin:9411
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0
 
 #==== eureka ====
 eureka:

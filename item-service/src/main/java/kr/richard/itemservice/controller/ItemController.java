@@ -32,10 +32,11 @@ public class ItemController {
     @Timed(value = "item.status", longTask = true)
     public String status(){
         return String.format("It's Working in Item Service"
-                + " / port(local.server.port)="+ environment.getProperty("local.server.port")
-                + " / port(server.port)="+ environment.getProperty("server.port")
-                + " / token secret="+ environment.getProperty("token.secret")
-                + " / token expiration time="+ environment.getProperty("token.expiration_time"));
+                + " / port(local.server.port) = "+ environment.getProperty("local.server.port") + "\n"
+                + " / port(server.port) = "+ environment.getProperty("server.port") + "\n"
+                + " / token secret = "+ environment.getProperty("token.secret") + "\n"
+                + " / token expiration time = "+ environment.getProperty("token.expiration_time") + "\n"
+                + " / config profile = "+ environment.getProperty("spring.cloud.config.profile"));
     }
 
     @GetMapping("/welcome")
