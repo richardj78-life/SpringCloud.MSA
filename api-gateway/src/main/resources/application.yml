@@ -4,14 +4,14 @@ spring:
   application:
     name: api-gateway
   rabbitmq:
-#    host: rabbitmq
-    host: 127.0.0.1
+    host: rabbitmq
+#    host: 127.0.0.1
     port: 5672
     username: guest
     password: guest
   config:
-#    import: optional:configserver:http://config-server:8888
-    import: optional:configserver:http://127.0.0.1:8888
+    import: optional:configserver:http://config-server:8888
+#    import: optional:configserver:http://127.0.0.1:8888
   cloud:
     config:
       name: kr_richard
@@ -109,13 +109,6 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/order-service/(?<segment>.*), /$\{segment}
-  zipkin:
-    base-url: http://127.0.0.1:9411
-      #    base-url: http://zipkin:9411
-    enabled: true
-  sleuth:
-    sampler:
-      probability: 1.0
 
 #==== eureka ====
 eureka:
@@ -123,8 +116,8 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-#      defaultZone: http://discovery-server:8761/eureka
-      defaultZone: http://127.0.0.1:8761/eureka
+      defaultZone: http://discovery-server:8761/eureka
+#      defaultZone: http://127.0.0.1:8761/eureka
 
 #==== token ====
 #token:

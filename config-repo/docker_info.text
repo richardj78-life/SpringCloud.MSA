@@ -78,6 +78,14 @@ Windows OS
   default-character-set=utf8mb4
   [mysqldump]
   default-character-set=utf8mb4
+  bind-address = 0.0.0.0
+
+  mysql> select user,host,Grant_priv from mysql.user;
+  SET PASSWORD FOR 'root'@'%' = 'skrktnno1@#$';
+  GRANT GRANT OPTION ON *.* TO 'root'@'%';
+  GRANT ALL PRIVILEGES ON kr_richard_eureka.* TO 'root'@'%';
+
+  FLUSH PRIVILEGES;
 
   *build
     docker build -t richardj78/kr_richard_msa:mysql_8.0.31 .

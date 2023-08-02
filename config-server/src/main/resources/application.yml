@@ -19,9 +19,11 @@ spring:
             /17rbztkLAJz+KVWedIHXHneKGw1O56G4A==
             -----END EC PRIVATE KEY-----
           default-label: master
+      name: kr_richard
+      profile: alpha
+      label: master
   rabbitmq:
-#    host: rabbitmq
-    host: 127.0.0.1
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
